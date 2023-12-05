@@ -1,0 +1,1 @@
+nodemon --no-warnings bot.js
