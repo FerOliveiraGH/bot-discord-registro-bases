@@ -17,7 +17,7 @@ client.on('messageCreate', async (message) => {
     if (message.channel.id === channelId) {
         if (message.author.bot) return;
 
-        if (message.attachments.size > 0 && message.attachments.first().contentType.startsWith('image')) {
+        if (message.attachments.size > 0 && message.attachments.first()) {
             const locationURL = message.attachments.first().url;
             
             try {
@@ -32,8 +32,8 @@ client.on('messageCreate', async (message) => {
             } catch (error) {
                 console.error('Erro ao apagar a mensagem ou criar o tópico:', error);
             }
-        } else if(!message.attachments.first().contentType.startsWith('image')) {
-            console.info('Mensagem Deletada:', message.author.username);
+        } else if(!message.attachments.first()) {
+            console.info('Mensagem Deletada:', message.author.username, "Conteúdo:", message.content);
             await message.delete();
         }
     }
