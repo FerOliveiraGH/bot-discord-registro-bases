@@ -32,6 +32,9 @@ client.on('messageCreate', async (message) => {
             } catch (error) {
                 console.error('Erro ao apagar a mensagem ou criar o tópico:', error);
             }
+        } else if(!message.attachments.first().contentType.startsWith('image')) {
+            console.info('Mensagem Deletada:', message.author.username);
+            await message.delete();
         }
     }
 });
