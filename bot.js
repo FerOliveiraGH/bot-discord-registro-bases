@@ -11,7 +11,7 @@ const client = new Client({
 require('dotenv').config();
 
 const token = process.env.DISCORD_TOKEN ?? 'ABcd123ABcd123ABcd123ABcd123ABcd123.ABcd123.ABcd123ABcd123-ABcd123-ABcd123';
-const channelsId = process.env.CHANNELSID.split(",") ?? '1234567891234567891';
+const channelsId = process.env.CHANNELSID.split(",") ?? ['1234567891234567891'];
 
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
