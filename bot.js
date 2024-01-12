@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, Bitwise } = require('discord.js');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -22,14 +22,32 @@ client.on('messageCreate', async (message) => {
                 const locationURL = message.attachments.first().url;
                 
                 try {
-                    await message.delete();
+                    const messages = await message.channel.messages.fetch();
+                    const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
 
-                    await message.channel.send({
-                        content: `Registro de Base - <@${message.author.id}>`,
-                        files: [locationURL],
-                    });
+                    if (mentionedMessage) {
+                        const embed = new EmbedBuilder()
+                        .setColor('Red')
+                        .setDescription(`<@${message.author.id}> você já possui registro, favor abrir um [ticket](https://discord.com/channels/1159615012562800721/1159640760732373104) para trocar a localização.`);
 
-                    console.info('Registro de base solicitado por:', message.author.username);
+                        await mentionedMessage.reply({
+                            embeds: [embed],
+                            ephemeral: true
+                        });
+
+                        await message.delete();
+
+                        console.log(`${message.author.username} foi mencionado em mensagens anteriores.`);
+                    } else {
+                        await message.channel.send({
+                            content: `Registro de Base - <@${message.author.id}>`,
+                            files: [locationURL],
+                        });
+
+                        await message.delete();
+    
+                        console.info('Registro de base solicitado por:', message.author.username);
+                    }
                 } catch (error) {
                     console.error('Erro ao apagar a mensagem ou criar o tópico:', error);
                 }
