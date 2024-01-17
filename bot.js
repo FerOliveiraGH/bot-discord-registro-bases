@@ -18,40 +18,34 @@ client.on('messageCreate', async (message) => {
     
     channelsId.forEach(async channelId => {
         if (message.channel.id === channelId) {
-            if (message.attachments.size > 0 && message.attachments.first()) {
-                const locationURL = message.attachments.first().url;
-                
+            const typeImg = ['image/jpeg', 'image/png'];
+            const attachment = message.attachments.first();
+            if (message.attachments.size > 0 && attachment && typeImg.includes(attachment.contentType)) {
                 try {
-                    const messages = await message.channel.messages.fetch();
-                    const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
+                    try {
+                        const messages = await message.channel.messages.fetch();
+                        const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
 
-                    if (mentionedMessage) {
-                        const embed = new EmbedBuilder()
-                        .setColor('Red')
-                        .setDescription(`<@${message.author.id}> você já possui registro, favor abrir um [ticket](https://discord.com/channels/1159615012562800721/1159640760732373104) para trocar a localização.`);
-
-                        await mentionedMessage.reply({
-                            embeds: [embed],
-                            ephemeral: true
-                        });
-
-                        await message.delete();
-
-                        console.log(`${message.author.username} foi mencionado em mensagens anteriores.`);
-                    } else {
-                        await message.channel.send({
-                            content: `Registro de Base - <@${message.author.id}>`,
-                            files: [locationURL],
-                        });
-
-                        await message.delete();
-    
-                        console.info('Registro de base solicitado por:', message.author.username);
+                        if (mentionedMessage) {
+                            await mentionedMessage.delete()
+                        }
                     }
+                    catch {
+                        console.log(`falha ao remover a registro anterior`);
+                    }
+                    
+                    await message.delete();
+
+                    await message.channel.send({
+                        content: `Registro de Base - <@${message.author.id}>`,
+                        files: [attachment.url],
+                    });
+
+                    console.info('Registro de base solicitado por:', message.author.username);
                 } catch (error) {
                     console.error('Erro ao apagar a mensagem ou criar o tópico:', error);
                 }
-            } else if(!message.attachments.first()) {
+            } else {
                 console.info('Mensagem Deletada:', message.author.username, "Conteúdo:", message.content);
                 await message.delete();
             }
