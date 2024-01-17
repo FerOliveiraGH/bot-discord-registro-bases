@@ -22,11 +22,13 @@ client.on('messageCreate', async (message) => {
             const attachment = message.attachments.first();
             if (message.attachments.size > 0 && attachment && typeImg.includes(attachment.contentType)) {
                 try {
+                    let renewed = "";
                     try {
                         const messages = await message.channel.messages.fetch();
                         const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
 
                         if (mentionedMessage) {
+                            renewed = " - **Renovado**"
                             await mentionedMessage.delete()
                         }
                     }
@@ -37,7 +39,7 @@ client.on('messageCreate', async (message) => {
                     await message.delete();
 
                     await message.channel.send({
-                        content: `Registro de Base - <@${message.author.id}>`,
+                        content: `Registro de Base - <@${message.author.id}>${renewed}`,
                         files: [attachment.url],
                     });
 
