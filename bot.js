@@ -23,18 +23,18 @@ client.on('messageCreate', async (message) => {
             if (message.attachments.size > 0 && attachment && typeImg.includes(attachment.contentType)) {
                 try {
                     let renewed = "";
-                    try {
-                        const messages = await message.channel.messages.fetch();
-                        const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
+                    // try {
+                    //     const messages = await message.channel.messages.fetch();
+                    //     const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
 
-                        if (mentionedMessage) {
-                            renewed = " - **Renovado**"
-                            await mentionedMessage.delete()
-                        }
-                    }
-                    catch {
-                        console.log(`falha ao remover a registro anterior`);
-                    }
+                    //     if (mentionedMessage) {
+                    //         renewed = " - **Renovado**"
+                    //         await mentionedMessage.delete()
+                    //     }
+                    // }
+                    // catch {
+                    //     console.log(`falha ao remover a registro anterior`);
+                    // }
                     
                     await message.delete();
 
