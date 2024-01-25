@@ -38,7 +38,6 @@ client.on('messageCreate', async (message) => {
                             if (err) {
                                 return console.error(err.message);
                             }
-                            console.log(row);
         
                             if (row) {
                                 message.channel.messages.fetch(row.messageId).then(message => {
