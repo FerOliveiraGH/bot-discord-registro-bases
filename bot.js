@@ -40,9 +40,13 @@ client.on('messageCreate', async (message) => {
                             }
         
                             if (row) {
-                                message.channel.messages.fetch(row.messageId).then(message => {
-                                        message.delete()
-                                });
+                                try {
+                                    message.channel.messages.fetch(row.messageId).then(message => {
+                                            message.delete()
+                                    });
+                                } catch (err) {
+                                    console.log(err)
+                                }
 
                                 message.channel.send({
                                     content: `Registro de Base - <@${message.author.id}> - **Renovado**`,
