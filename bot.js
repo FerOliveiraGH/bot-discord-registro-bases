@@ -31,8 +31,6 @@ client.on('messageCreate', async (message) => {
             const attachment = message.attachments.first();
             if (message.attachments.size > 0 && attachment && typeImg.includes(attachment.contentType)) {
                 try {
-                    console.log(message.author.id)
-
                     db.get(
                         'SELECT messageId FROM baseRegister WHERE userId = ?', 
                         [message.author.id], 
