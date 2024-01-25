@@ -8,6 +8,15 @@ const client = new Client({
     ],
 });
 
+const { Database } = require('sqlite3');
+const path = require('path');
+
+const dbPath = path.join(__dirname, './database.sqlite');
+const db = new Database(dbPath);
+
+const { ensureDatabaseFile, initializeDatabase } = require('./src/helpers/start_database.js')
+ensureDatabaseFile().then(initializeDatabase(db));
+
 require('dotenv').config();
 
 const token = process.env.DISCORD_TOKEN ?? 'ABcd123ABcd123ABcd123ABcd123ABcd123.ABcd123.ABcd123ABcd123-ABcd123-ABcd123';
@@ -22,26 +31,56 @@ client.on('messageCreate', async (message) => {
             const attachment = message.attachments.first();
             if (message.attachments.size > 0 && attachment && typeImg.includes(attachment.contentType)) {
                 try {
-                    let renewed = "";
-                    // try {
-                    //     const messages = await message.channel.messages.fetch();
-                    //     const mentionedMessage = messages.find(msg => msg.mentions.has(message.author));
+                    console.log(message.author.id)
 
-                    //     if (mentionedMessage) {
-                    //         renewed = " - **Renovado**"
-                    //         await mentionedMessage.delete()
-                    //     }
-                    // }
-                    // catch {
-                    //     console.log(`falha ao remover a registro anterior`);
-                    // }
-                    
+                    db.get(
+                        'SELECT messageId FROM baseRegister WHERE userId = ?', 
+                        [message.author.id], 
+                        (err, row) => {
+                            if (err) {
+                                return console.error(err.message);
+                            }
+                            console.log(row);
+        
+                            if (row) {
+                                message.channel.messages.fetch(row.messageId).then(message => {
+                                        message.delete()
+                                });
+
+                                message.channel.send({
+                                    content: `Registro de Base - <@${message.author.id}> - **Renovado**`,
+                                    files: [attachment.url],
+                                }).then(update => {
+                                    db.run(
+                                        `UPDATE baseRegister SET messageId = ? WHERE userId = ?`, 
+                                        [update.id, message.author.id],
+                                        (err) => {
+                                            if (err) {
+                                                return console.log(err.message);
+                                            }
+                                        }
+                                    );
+                                });
+                            } else {
+                                message.channel.send({
+                                    content: `Registro de Base - <@${message.author.id}>`,
+                                    files: [attachment.url],
+                                }).then(create => {
+                                    db.run(
+                                        "INSERT INTO baseRegister(userId, messageId) VALUES(?,?)",
+                                        [message.author.id, create.id],
+                                        (err) => {
+                                            if (err) {
+                                                return console.log(err.message);
+                                            }
+                                        }
+                                    );
+                                });
+                            }
+                        }
+                    );
+
                     await message.delete();
-
-                    await message.channel.send({
-                        content: `Registro de Base - <@${message.author.id}>${renewed}`,
-                        files: [attachment.url],
-                    });
 
                     console.info('Registro de base solicitado por:', message.author.username);
                 } catch (error) {
