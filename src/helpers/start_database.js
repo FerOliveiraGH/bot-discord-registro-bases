@@ -14,7 +14,7 @@ module.exports = {
     },
     async initializeDatabase(db) {
         try {
-            await db.run('CREATE TABLE IF NOT EXISTS baseRegister (userId TEXT PRIMARY KEY, channelId TEXT, messageId TEXT);');
+            await db.run('CREATE TABLE IF NOT EXISTS baseRegister (userId TEXT, channelId TEXT, messageId TEXT);');
         } catch (error) {
             console.error('Erro ao criar a tabela baseRegister:', error.message);
         }
