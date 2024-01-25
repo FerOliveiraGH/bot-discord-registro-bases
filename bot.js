@@ -34,18 +34,17 @@ client.on('messageCreate', async (message) => {
                     db.get(
                         'SELECT messageId FROM baseRegister WHERE userId = ?', 
                         [message.author.id], 
-                        (err, row) => {
+                        async (err, row) => {
                             if (err) {
                                 return console.error(err.message);
-                            }
-        
-                            if (row) {
+                            } 
+                            else if (row) {
                                 try {
-                                    message.channel.messages.fetch(row.messageId).then(message => {
-                                            message.delete()
-                                    });
+                                    await message.channel.messages.fetch(row.messageId).then(message => {
+                                        message.delete()
+                                    })
                                 } catch (err) {
-                                    console.log(err)
+                                    console.log('Mensagem anterior não foi removida!')
                                 }
 
                                 message.channel.send({
@@ -61,6 +60,8 @@ client.on('messageCreate', async (message) => {
                                             }
                                         }
                                     );
+
+                                    console.info('Registro de base renovado por:', message.author.username);
                                 });
                             } else {
                                 message.channel.send({
@@ -76,14 +77,13 @@ client.on('messageCreate', async (message) => {
                                             }
                                         }
                                     );
+                                    console.info('Registro de base solicitado por:', message.author.username);
                                 });
                             }
                         }
                     );
 
                     await message.delete();
-
-                    console.info('Registro de base solicitado por:', message.author.username);
                 } catch (error) {
                     console.error('Erro ao apagar a mensagem ou criar o tópico:', error);
                 }
