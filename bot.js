@@ -32,8 +32,8 @@ client.on('messageCreate', async (message) => {
             if (message.attachments.size > 0 && attachment && typeImg.includes(attachment.contentType)) {
                 try {
                     db.get(
-                        'SELECT messageId FROM baseRegister WHERE userId = ?', 
-                        [message.author.id], 
+                        'SELECT channelId, messageId FROM baseRegister WHERE userId = ? AND channelId = ?', 
+                        [message.author.id, message.channel.id], 
                         async (err, row) => {
                             if (err) {
                                 return console.error(err.message);
@@ -52,8 +52,8 @@ client.on('messageCreate', async (message) => {
                                     files: [attachment.url],
                                 }).then(update => {
                                     db.run(
-                                        `UPDATE baseRegister SET messageId = ? WHERE userId = ?`, 
-                                        [update.id, message.author.id],
+                                        `UPDATE baseRegister SET messageId = ? WHERE userId = ? AND channelId = ?`, 
+                                        [update.id, message.author.id, message.channel.id],
                                         (err) => {
                                             if (err) {
                                                 return console.log(err.message);
@@ -69,8 +69,8 @@ client.on('messageCreate', async (message) => {
                                     files: [attachment.url],
                                 }).then(create => {
                                     db.run(
-                                        "INSERT INTO baseRegister(userId, messageId) VALUES(?,?)",
-                                        [message.author.id, create.id],
+                                        "INSERT INTO baseRegister(userId, channelId, messageId) VALUES(?,?,?)",
+                                        [message.author.id, message.channel.id, create.id],
                                         (err) => {
                                             if (err) {
                                                 return console.log(err.message);
